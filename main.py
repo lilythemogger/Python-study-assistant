@@ -1,0 +1,5 @@
+print("Welcome to my Python Study Assistant!")
+print("1. Add a subject")
+print("2. Start a study session")
+print("3. View progress")
+print("4. Exit")
