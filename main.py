@@ -1,3 +1,5 @@
+subjects = []
+
 print("===== PYTHON STUDY ASSISTANT =====")
 
 while True:
@@ -10,7 +12,9 @@ while True:
     choice = input("Enter your choice: ")
 
     if choice == "1":
-        print("You chose: Add a subject")
+        subject = input("Enter the subject name: ")
+        subjects.append(subject)
+        print(f"{subject} has been added!")
 
     elif choice == "2":
         print("You chose: Start a study session")
