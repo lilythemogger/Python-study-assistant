@@ -1,12 +1,18 @@
 import json
 import time
 
-# Load saved subjects
+# Load saved data
 try:
-    with open("subjects.json", "r") as file:
-        subjects = json.load(file)
+    with open("study_data.json", "r") as file:
+        study_data = json.load(file)
 except FileNotFoundError:
-    subjects = []
+    study_data = {
+        "subjects": [],
+        "study_time": {}
+    }
+
+subjects = study_data["subjects"]
+study_time = study_data["study_time"]
 
 print("===== PYTHON STUDY ASSISTANT =====")
 
@@ -15,20 +21,24 @@ while True:
     print("1. Add a subject")
     print("2. Start a study session")
     print("3. View subjects")
-    print("4. Exit")
+    print("4. View study progress")
+    print("5. Exit")
 
     choice = input("Enter your choice: ")
 
+    # Add subject
     if choice == "1":
         subject = input("Enter the subject name: ")
 
-        subjects.append(subject)
+        if subject not in subjects:
+            subjects.append(subject)
+            study_time[subject] = 0
 
-        with open("subjects.json", "w") as file:
-            json.dump(subjects, file)
+            print(f"{subject} has been added!")
+        else:
+            print("That subject already exists.")
 
-        print(f"{subject} has been added!")
-
+    # Study session
     elif choice == "2":
         if len(subjects) == 0:
             print("Please add a subject first.")
@@ -45,6 +55,10 @@ while True:
 
             minutes = int(input("How many minutes do you want to study? "))
 
+            if minutes <= 0:
+                print("Please enter a positive number.")
+                continue
+
             print(f"\nStudying {subject} for {minutes} minutes... 📚")
             print("Your timer has started! ⏱️")
 
@@ -52,14 +66,21 @@ while True:
                 mins = remaining // 60
                 secs = remaining % 60
 
-                print(f"\rTime remaining: {mins:02d}:{secs:02d}", end="")
+                print(
+                    f"\rTime remaining: {mins:02d}:{secs:02d}",
+                    end=""
+                )
+
                 time.sleep(1)
 
             print("\n🎉 Study session complete!")
 
+            study_time[subject] += minutes
+
         except (ValueError, IndexError):
             print("Invalid input. Please try again.")
 
+    # View subjects
     elif choice == "3":
         print("\nYour subjects:")
 
@@ -69,7 +90,29 @@ while True:
             for number, subject in enumerate(subjects, start=1):
                 print(f"{number}. {subject}")
 
+    # View progress
     elif choice == "4":
+        print("\n===== STUDY PROGRESS =====")
+
+        if len(subjects) == 0:
+            print("No study data yet.")
+        else:
+            total = 0
+
+            for subject in subjects:
+                minutes = study_time.get(subject, 0)
+                print(f"{subject}: {minutes} minutes")
+                total += minutes
+
+            print(f"\nTotal study time: {total} minutes")
+
+    # Exit
+    elif choice == "5":
+        # Save data before exiting
+        with open("study_data.json", "w") as file:
+            json.dump(study_data, file, indent=4)
+
+        print("Your progress has been saved! 💾")
         print("Goodbye! 👋")
         break
 
